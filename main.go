@@ -30,9 +30,9 @@ func main() {
 	forwarders = make(map[string]*k8portforwarder.K8PortForwarder)
 	for key, forwardConfig := range forwards {
 		var err error
-		forwarders[key], err = k8portforwarder.NewK8PortForwarder(forwardConfig)
+		forwarders[key], err = k8portforwarder.NewK8PortForwarder(key, forwardConfig)
 		if err != nil {
-			panic(err)
+			log.Fatal("Error setting up port forwarder: ", key, err)
 		}
 	}
 
@@ -44,7 +44,6 @@ func main() {
 
 	// kpf, err := k8portforwarder.NewK8PortForwarder(kubeContext, namespace, localPort, remotePort, remoteType, remoteName)
 	// if err != nil {
-	// 	log.Fatal("Error setting up port forwarder: ", err)
 	// }
 
 	// ctx := context.TODO()

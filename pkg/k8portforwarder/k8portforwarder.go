@@ -21,11 +21,12 @@ type K8PortForwarderConfig struct {
 	Context   string `mapstructure:"context"`
 	Namespace string `mapstructure:"namespace"`
 	Name      string `mapstructure:"name"`
-	Port      uint   `mapstructure:"port"`
-	LocalPort uint   `mapstructure:"localPort"`
+	Port      int    `mapstructure:"port"`
+	LocalPort int    `mapstructure:"localPort"`
 }
 
 type K8PortForwarder struct {
+	Key                 string
 	Config              *rest.Config
 	Clientset           kubernetes.Interface
 	PortForwarderConfig K8PortForwarderConfig
@@ -33,8 +34,14 @@ type K8PortForwarder struct {
 	readyChan           chan struct{}
 }
 
-func NewK8PortForwarder(config K8PortForwarderConfig) (*K8PortForwarder, error) {
+func NewK8PortForwarder(key string, config K8PortForwarderConfig) (*K8PortForwarder, error) {
+
+	if ok := validatePortForwarderConfig(config); !ok {
+		return nil, errors.New("Invalid config for " + key)
+	}
+
 	kpf := &K8PortForwarder{
+		Key:                 key,
 		PortForwarderConfig: config,
 	}
 
@@ -58,8 +65,19 @@ func NewK8PortForwarder(config K8PortForwarderConfig) (*K8PortForwarder, error) 
 	return kpf, nil
 }
 
+func validatePortForwarderConfig(config K8PortForwarderConfig) bool {
+	//TODO
+	if config.Context == "" {
+		return false
+	}
+	if config.Name == "" {
+		return false
+	}
+	return true
+}
+
 func (kpf *K8PortForwarder) Test() {
-	fmt.Println("name:", kpf.PortForwarderConfig.Name)
+	fmt.Printf("TEST: %#v\n", kpf.PortForwarderConfig)
 }
 
 func (kpf *K8PortForwarder) Start(ctx context.Context) error {
