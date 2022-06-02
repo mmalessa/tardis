@@ -11,6 +11,7 @@ services:
       - ../:/go/src/${APP_NAME}
       - gopkg:/go/pkg/
       - gobin:/go/bin/
+      - ~/.kube/:/home/developer/.kube/
     command: ['tail', '-f', '/dev/null']
     networks:
       application:

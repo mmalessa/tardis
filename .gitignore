@@ -1,4 +1,4 @@
 /bin/*
-
 !/**/.gitkeep
+/config/9*.yaml
 /.vscode
